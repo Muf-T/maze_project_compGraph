@@ -111,7 +111,44 @@ class MazeApp:
         self.northWall[R][C-1] = 0
         self.render_frame()
 
-    
+    def solve(self):
+        """Backtracking solver[cite: 81]."""
+        start, end = (0, 0), (R-1, C-1) # Arbitrary start/end [cite: 76]
+        self.solve_stack = [start]
+        self.solve_visited.add(start)
+
+        while self.solve_stack:
+            r, c = self.solve_stack[-1]
+            self.path = list(self.solve_stack)
+            self.render_frame()
+            
+            if (r, c) == end: break
+
+            # Check moves: No wall and unvisited [cite: 82]
+            moves = []
+            # North
+            if r > 0 and self.northWall[r][c] == 0 and (r-1, c) not in self.solve_visited:
+                moves.append((r-1, c))
+            # South
+            if r < R-1 and self.northWall[r+1][c] == 0 and (r+1, c) not in self.solve_visited:
+                moves.append((r+1, c))
+            # East
+            if c < C-1 and self.eastWall[r][c] == 0 and (r, c+1) not in self.solve_visited:
+                moves.append((r, c+1))
+            # West
+            if c > 0 and self.eastWall[r][c-1] == 0 and (r, c-1) not in self.solve_visited:
+                moves.append((r, c-1))
+
+            if moves:
+                next_cell = random.choice(moves) # [cite: 81]
+                self.solve_visited.add(next_cell)
+                self.solve_stack.append(next_cell)
+            else:
+                # Dead end [cite: 84]
+                self.dead_ends.add(self.solve_stack.pop())
+            
+            time.sleep(0.05)
+
     def render_frame(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
