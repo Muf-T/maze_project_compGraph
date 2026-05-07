@@ -12,7 +12,7 @@ OFFSET = (C * CELL_SIZE) / 2
 
 class MazeApp:
     def __init__(self):
-        # Arrays per assignment [cite: 13, 15, 17]
+        # Arrays to represent walls and visited cells
         self.northWall = [[1 for _ in range(C)] for _ in range(R + 1)] 
         self.eastWall = [[1 for _ in range(C + 1)] for _ in range(R)]
         self.visited = [[False for _ in range(C)] for _ in range(R)]
@@ -27,34 +27,33 @@ class MazeApp:
         glClearColor(1.0, 1.0, 1.0, 1.0)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        # Set up a 2D orthographic view
         gluOrtho2D(-2, (C * CELL_SIZE) + 2, (R * CELL_SIZE) + 2, -2)
         glMatrixMode(GL_MODELVIEW)
 
     def draw_maze(self):
-        glColor3f(0, 0, 0) # Black walls [cite: 67]
+        glColor3f(0, 0, 0) # Black walls
         glLineWidth(2)
         glBegin(GL_LINES)
         for r in range(R):
             for c in range(C):
                 x, y = c * CELL_SIZE, r * CELL_SIZE
-                # North Wall [cite: 15]
+                # North Wall
                 if self.northWall[r][c]:
                     glVertex2f(x, y); glVertex2f(x + CELL_SIZE, y)
-                # East Wall [cite: 12]
+                # East Wall
                 if self.eastWall[r][c]:
                     glVertex2f(x + CELL_SIZE, y); glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
                 
-                # Bottom Edge (Phantom row) [cite: 16]
+                # Bottom Edge (Phantom row)
                 if r == R - 1 and self.northWall[R][c]:
                     glVertex2f(x, y + CELL_SIZE); glVertex2f(x + CELL_SIZE, y + CELL_SIZE)
-                # Left Edge [cite: 17]
+                # Left Edge
                 if c == 0 and self.eastWall[r][C]: # Using index C for left boundary
                     glVertex2f(x, y); glVertex2f(x, y + CELL_SIZE)
         glEnd()
 
     def draw_dots(self):
-        # Draw dead ends (Blue) [cite: 84, 102]
+        # Blue dead ends
         glColor3f(0, 0, 1)
         glPointSize(8)
         glBegin(GL_POINTS)
@@ -62,7 +61,7 @@ class MazeApp:
             glVertex2f(c * CELL_SIZE + CELL_SIZE/2, r * CELL_SIZE + CELL_SIZE/2)
         glEnd()
 
-        # Draw current path (Red) [cite: 83, 102]
+        # Red for the path being explored
         glColor3f(1, 0, 0)
         glBegin(GL_POINTS)
         for (r, c) in self.path:
@@ -78,8 +77,7 @@ class MazeApp:
 
         while visited_count < (R * C):
             neighbors = []
-            # Check 4 neighbors [cite: 69]
-            # (dr, dc, wall_type, coords)
+            # Check 4 neighbors
             dirs = [(-1,0,'N',(curr_r,curr_c)), (1,0,'N',(curr_r+1,curr_c)), 
                     (0,1,'E',(curr_r,curr_c)), (0,-1,'E',(curr_r,curr_c-1))]
             
@@ -89,14 +87,14 @@ class MazeApp:
                     neighbors.append((nr, nc, w_type, (wr, wc)))
 
             if neighbors:
-                # 1. Choose randomly [cite: 72]
+                # 1. Choose randomly among unvisited neighbors
                 next_r, next_c, w_type, (wr, wc) = random.choice(neighbors)
                 
-                # 2. Eat wall [cite: 73]
+                # 2. Eat wall between current and chosen neighbor
                 if w_type == 'N': self.northWall[wr][wc] = 0
                 else: self.eastWall[wr][wc] = 0
                 
-                # Bonus: 1 in 20 chance for extra wall (cycles) [cite: 92, 104]
+                # Bonus: Randomly create loops to make maze less perfect
                 if random.random() < 0.05:
                     self.northWall[random.randint(1, R-1)][random.randint(0, C-1)] = 0
 
@@ -106,14 +104,14 @@ class MazeApp:
                 visited_count += 1
                 self.render_frame()
             elif stack:
-                curr_r, curr_c = stack.pop() # 3. Pop if trapped [cite: 74]
+                curr_r, curr_c = stack.pop() # 3. Pop if trapped 
         self.northWall[0][0] = 0
         self.northWall[R][C-1] = 0
         self.render_frame()
 
     def solve(self):
         """Backtracking solver[cite: 81]."""
-        start, end = (0, 0), (R-1, C-1) # Arbitrary start/end [cite: 76]
+        start, end = (0, 0), (R-1, C-1) # Arbitrary start/end
         self.solve_stack = [start]
         self.solve_visited.add(start)
 
@@ -124,7 +122,7 @@ class MazeApp:
             
             if (r, c) == end: break
 
-            # Check moves: No wall and unvisited [cite: 82]
+            # Check moves; No wall and unvisited 
             moves = []
             # North
             if r > 0 and self.northWall[r][c] == 0 and (r-1, c) not in self.solve_visited:
@@ -140,11 +138,11 @@ class MazeApp:
                 moves.append((r, c-1))
 
             if moves:
-                next_cell = random.choice(moves) # [cite: 81]
+                next_cell = random.choice(moves) 
                 self.solve_visited.add(next_cell)
                 self.solve_stack.append(next_cell)
             else:
-                # Dead end [cite: 84]
+                # Dead end
                 self.dead_ends.add(self.solve_stack.pop())
             
             time.sleep(0.05)
