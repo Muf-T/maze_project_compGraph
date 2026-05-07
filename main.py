@@ -69,6 +69,48 @@ class MazeApp:
             glVertex2f(c * CELL_SIZE + CELL_SIZE/2, r * CELL_SIZE + CELL_SIZE/2)
         glEnd()
 
+    def generate(self):
+        """Mouse 'eats' walls using stack-based DFS[cite: 68, 72]."""
+        stack = []
+        curr_r, curr_c = random.randint(0, R-1), random.randint(0, C-1)
+        self.visited[curr_r][curr_c] = True
+        visited_count = 1
+
+        while visited_count < (R * C):
+            neighbors = []
+            # Check 4 neighbors [cite: 69]
+            # (dr, dc, wall_type, coords)
+            dirs = [(-1,0,'N',(curr_r,curr_c)), (1,0,'N',(curr_r+1,curr_c)), 
+                    (0,1,'E',(curr_r,curr_c)), (0,-1,'E',(curr_r,curr_c-1))]
+            
+            for dr, dc, w_type, (wr, wc) in dirs:
+                nr, nc = curr_r + dr, curr_c + dc
+                if 0 <= nr < R and 0 <= nc < C and not self.visited[nr][nc]:
+                    neighbors.append((nr, nc, w_type, (wr, wc)))
+
+            if neighbors:
+                # 1. Choose randomly [cite: 72]
+                next_r, next_c, w_type, (wr, wc) = random.choice(neighbors)
+                
+                # 2. Eat wall [cite: 73]
+                if w_type == 'N': self.northWall[wr][wc] = 0
+                else: self.eastWall[wr][wc] = 0
+                
+                # Bonus: 1 in 20 chance for extra wall (cycles) [cite: 92, 104]
+                if random.random() < 0.05:
+                    self.northWall[random.randint(1, R-1)][random.randint(0, C-1)] = 0
+
+                stack.append((curr_r, curr_c))
+                curr_r, curr_c = next_r, next_c
+                self.visited[curr_r][curr_c] = True
+                visited_count += 1
+                self.render_frame()
+            elif stack:
+                curr_r, curr_c = stack.pop() # 3. Pop if trapped [cite: 74]
+        self.northWall[0][0] = 0
+        self.northWall[R][C-1] = 0
+        self.render_frame()
+
     
     def render_frame(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
