@@ -1,4 +1,3 @@
-
 # Maze Builder & Runner
 
 A Python-based graphical application that uses **PyOpenGL** and **Pygame** to generate a random "proper" maze and solve it using automated backtracking.
@@ -46,5 +45,3 @@ The solver uses a **Backtracking** approach:
 ```bash
 python main.py
 ```
-
-[![Watch the Video](https://cdn.loom.com/sessions/thumbnails/d052626e59764e45b2268d17e86c5f25-with-play.gif)](https://www.loom.com/share/d052626e59764e45b2268d17e86c5f25)
