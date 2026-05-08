@@ -4,7 +4,9 @@ A Python-based graphical application that uses **PyOpenGL** and **Pygame** to ge
 
 ## Demo
 
-[![Watch the Video](https://cdn.loom.com/sessions/thumbnails/d052626e59764e45b2268d17e86c5f25-with-play.gif)](https://www.loom.com/share/d052626e59764e45b2268d17e86c5f25)
+[![Watch the video](https://cdn.loom.com/sessions/thumbnails/d052626e59764e45b2268d17e86c5f25-00001.jpg)](https://www.loom.com/share/d052626e59764e45b2268d17e86c5f25)
+
+[Direct link to video if image doesn't load](https://www.loom.com/share/d052626e59764e45b2268d17e86c5f25)
 
 ## Features
 
