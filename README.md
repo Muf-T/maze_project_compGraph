@@ -1,7 +1,4 @@
 
-
-https://github.com/user-attachments/assets/7080e9bb-2489-41ca-b937-3c32e0c270eb
-
 # Maze Builder & Runner
 
 A Python-based graphical application that uses **PyOpenGL** and **Pygame** to generate a random "proper" maze and solve it using automated backtracking.
